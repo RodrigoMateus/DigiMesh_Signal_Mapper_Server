@@ -34,6 +34,8 @@ public class MainApp {
 		new LogRecord();
 
 		openMyDevice();
+		
+		Router.getInstance().processMyMessage(new ProcessMessage());
 	}
 
 	public static void openMyDevice() {
