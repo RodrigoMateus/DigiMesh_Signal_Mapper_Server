@@ -1,0 +1,14 @@
+##### COMMON SETTINGS #####
+XTendBaudRate = 115200
+
+##### WINDOWS SETTINGS #####
+XTendPort = COM13
+#XTendPort = COM14
+
+# MAC OSX SETTINGS
+#XTendPort = /dev/tty.usbserial
+#XTendPort = /dev/tty.usbserial-141
+#XTendPort = /dev/tty.usbserial-142
+
+##### LINUX SETTINGS #####
+#XTendPort = /dev/ttyUSB0
