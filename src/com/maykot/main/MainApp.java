@@ -30,11 +30,13 @@ public class MainApp {
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
-
 		new LogRecord();
 
 		openMyDevice();
-		
+
+		System.out.println("\n>> Waiting messages ...");
+
+		// Registra listener para processar mensagens recebidas
 		Router.getInstance().processMyMessage(new ProcessMessage());
 	}
 
