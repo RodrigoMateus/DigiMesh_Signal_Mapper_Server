@@ -1,5 +1,6 @@
 ##### COMMON SETTINGS #####
 XTendBaudRate = 115200
+TimeOutForSyncOperations = 10000
 
 ##### WINDOWS SETTINGS #####
 XTendPort = COM13
