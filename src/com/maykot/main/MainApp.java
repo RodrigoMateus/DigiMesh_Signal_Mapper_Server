@@ -3,20 +3,20 @@ package com.maykot.main;
 import java.io.IOException;
 
 import com.digi.xbee.api.DigiMeshDevice;
-import com.digi.xbee.api.models.APIOutputMode;
+import com.digi.xbee.api.RemoteXBeeDevice;
 import com.digi.xbee.api.utils.DeviceConfig;
 import com.digi.xbee.api.utils.LogRecord;
-import com.digi.xbee.api.utils.SerialPorts;
-import com.maykot.radiolibrary.Router;
+import com.maykot.radiolibrary.OpenMyDevice;
+import com.maykot.radiolibrary.RouterRadio;
 
 public class MainApp {
 
+	/* Arquivo de configurações do sistema */
+	static DeviceConfig deviceConfig;
+
 	/* XTends */
 	public static DigiMeshDevice myDevice;
-	public static DeviceConfig deviceConfig;
-	static String XTEND_PORT = null;
-	static int XTEND_BAUD_RATE;
-	static int TIMEOUT_FOR_SYNC_OPERATIONS = 10000; // 10 seconds
+	public static RemoteXBeeDevice remoteDevice;
 
 	public static void main(String[] args) {
 		System.out.println(" +-------------------+");
@@ -25,54 +25,16 @@ public class MainApp {
 
 		try {
 			deviceConfig = new DeviceConfig();
-			XTEND_PORT = deviceConfig.getXTendPort();
-			XTEND_BAUD_RATE = deviceConfig.getXTendBaudRate();
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
 		new LogRecord();
 
-		openMyDevice();
+		myDevice = OpenMyDevice.open(deviceConfig);
 
 		System.out.println("\n>> Waiting messages ...");
 
 		// Registra listener para processar mensagens recebidas
-		Router.getInstance().processMyMessage(new ProcessMessage());
-	}
-
-	public static void openMyDevice() {
-		try {
-			XTEND_PORT = deviceConfig.getXTendPort();
-			myDevice = openDevice(XTEND_PORT, XTEND_BAUD_RATE);
-			myDevice.addExplicitDataListener(Router.getInstance());
-			System.out.println("Was found LOCAL radio " + myDevice.getNodeID() + " (PowerLevel "
-					+ myDevice.getPowerLevel() + ").");
-			return;
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		for (String port : SerialPorts.getSerialPortList()) {
-			try {
-				System.out.println("Try " + port);
-				myDevice = openDevice(port, XTEND_BAUD_RATE);
-				myDevice.addExplicitDataListener(Router.getInstance());
-				System.out.println("Was found LOCAL radio " + myDevice.getNodeID() + " (PowerLevel: "
-						+ myDevice.getPowerLevel() + ").");
-				return;
-			} catch (Exception e) {
-				e.printStackTrace();
-				System.out.println("openDevice() ERROR");
-			}
-		}
-		System.out.println("LOCAL Radio not found! Try openDevice() again.");
-		openMyDevice();
-	}
-
-	public static DigiMeshDevice openDevice(String port, int bd) throws Exception {
-		DigiMeshDevice device = new DigiMeshDevice(port, bd);
-		device.open();
-		device.setAPIOutputMode(APIOutputMode.MODE_EXPLICIT);
-		return device;
+		RouterRadio.getInstance().processMyMessage(new ProcessMessage());
 	}
 }
