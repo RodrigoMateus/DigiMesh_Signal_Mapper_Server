@@ -16,7 +16,7 @@ import com.maykot.radiolibrary.ErrorMessage;
 import com.maykot.radiolibrary.MessageParameter;
 import com.maykot.radiolibrary.ProxyRequest;
 import com.maykot.radiolibrary.ProxyResponse;
-import com.maykot.radiolibrary.Router;
+import com.maykot.radiolibrary.RouterRadio;
 
 public class TreatRequest {
 
@@ -35,7 +35,7 @@ public class TreatRequest {
 		byte[] responseToSourceDevice = SerializationUtils.serialize(response);
 
 		try {
-			Router.getInstance().sendMessage(MainApp.myDevice, sourceDeviceAddress, MessageParameter.CONFIRM_HTTP_POST,
+			RouterRadio.getInstance().sendMessage(MainApp.myDevice, sourceDeviceAddress, MessageParameter.CONFIRM_HTTP_POST,
 					responseToSourceDevice);
 		} catch (TimeoutException e) {
 			// TODO Auto-generated catch block
