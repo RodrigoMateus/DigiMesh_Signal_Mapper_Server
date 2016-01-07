@@ -23,7 +23,18 @@ public class TreatRequest {
 	String mqttClientId = null;
 	String mqttMessageId = null;
 
+	private RouterRadio routerRadio;
+
+	public TreatRequest() {
+		this(RouterRadio.getInstance());
+	}
+
+	public TreatRequest(RouterRadio routerRadio) {
+		this.routerRadio = routerRadio;
+	}
+
 	public TreatRequest(RemoteXBeeDevice sourceDeviceAddress, byte[] message) {
+		this(RouterRadio.getInstance());
 
 		ProxyRequest proxyRequest = (ProxyRequest) SerializationUtils.deserialize(message);
 
@@ -35,7 +46,7 @@ public class TreatRequest {
 		byte[] responseToSourceDevice = SerializationUtils.serialize(response);
 
 		try {
-			RouterRadio.getInstance().sendMessage(MainApp.myDevice, sourceDeviceAddress, MessageParameter.CONFIRM_HTTP_POST,
+			routerRadio.sendMessage(MainApp.myDevice, sourceDeviceAddress, MessageParameter.CONFIRM_HTTP_POST,
 					responseToSourceDevice);
 		} catch (TimeoutException e) {
 			// TODO Auto-generated catch block
