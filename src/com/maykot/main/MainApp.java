@@ -4,10 +4,10 @@ import java.io.IOException;
 
 import com.digi.xbee.api.DigiMeshDevice;
 import com.digi.xbee.api.RemoteXBeeDevice;
-import com.digi.xbee.api.utils.DeviceConfig;
-import com.digi.xbee.api.utils.LogRecord;
 import com.maykot.radiolibrary.OpenMyDevice;
 import com.maykot.radiolibrary.RouterRadio;
+import com.maykot.utils.DeviceConfig;
+import com.maykot.utils.LogRecord;
 
 public class MainApp {
 
@@ -24,7 +24,7 @@ public class MainApp {
 		System.out.println(" +-------------------+\n");
 
 		try {
-			deviceConfig = new DeviceConfig();
+			deviceConfig = DeviceConfig.getInstance();
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}

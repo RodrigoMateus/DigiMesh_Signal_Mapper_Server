@@ -14,6 +14,7 @@ import com.maykot.radiolibrary.MessageParameter;
 import com.maykot.radiolibrary.RouterRadio;
 
 public class ProcessMessage implements IProcessMessage {
+	
 	private RouterRadio routerRadio;
 
 	public ProcessMessage() {

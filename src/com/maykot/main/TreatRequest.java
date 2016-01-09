@@ -20,9 +20,6 @@ import com.maykot.radiolibrary.RouterRadio;
 
 public class TreatRequest {
 
-	String mqttClientId = null;
-	String mqttMessageId = null;
-
 	private RouterRadio routerRadio;
 
 	public TreatRequest() {
@@ -34,8 +31,6 @@ public class TreatRequest {
 	}
 
 	public TreatRequest(RemoteXBeeDevice sourceDeviceAddress, byte[] message) {
-		this(RouterRadio.getInstance());
-
 		ProxyRequest proxyRequest = (ProxyRequest) SerializationUtils.deserialize(message);
 
 		System.out.println(proxyRequest.getIdMessage());
@@ -63,20 +58,34 @@ public class TreatRequest {
 		HashMap<String, String> requestHeader = new HashMap<String, String>();
 		requestHeader = proxyRequest.getHeader();
 
-		byte[] tempByteArray = proxyRequest.getBody();
-		String fileName = (new String(new SimpleDateFormat("yyyy-MM-dd_HHmmss_").format(new Date()))) + "image.jpg";
-		try {
-			FileOutputStream fileChannel = new FileOutputStream(fileName);
-			fileChannel.write(tempByteArray);
-			fileChannel.close();
-			response = new ProxyResponse(ErrorMessage.OK.value(), requestHeader.get("content-type"),
-					ErrorMessage.OK.description().getBytes());
-		} catch (FileNotFoundException e) {
-			System.out.println("ERRO FileChannel");
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		String contentType = requestHeader.get("content-type");
+
+		switch (contentType) {
+		case "application/json":
+
+			break;
+
+		case "image/jpg":
+			byte[] tempByteArray = proxyRequest.getBody();
+			String fileName = (new String(new SimpleDateFormat("yyyy-MM-dd_HHmmss_").format(new Date()))) + "image.jpg";
+			try {
+				FileOutputStream fileChannel = new FileOutputStream(fileName);
+				fileChannel.write(tempByteArray);
+				fileChannel.close();
+				response = new ProxyResponse(ErrorMessage.OK.value(), requestHeader.get("content-type"),
+						ErrorMessage.OK.description().getBytes());
+			} catch (FileNotFoundException e) {
+				System.out.println("ERRO FileChannel");
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			break;
+
+		default:
+			break;
 		}
 
 		if (response == null) {
@@ -85,5 +94,6 @@ public class TreatRequest {
 		}
 		response.setIdMessage(proxyRequest.getIdMessage());
 		return response;
+
 	}
 }
