@@ -1,13 +1,11 @@
 package com.maykot.main;
 
-import java.io.IOException;
-
 import com.digi.xbee.api.DigiMeshDevice;
 import com.digi.xbee.api.RemoteXBeeDevice;
-import com.maykot.radiolibrary.OpenMyDevice;
-import com.maykot.radiolibrary.RouterRadio;
+import com.maykot.radiolibrary.RadioRouter;
 import com.maykot.utils.DeviceConfig;
 import com.maykot.utils.LogRecord;
+import com.maykot.utils.OpenMyDevice;
 
 public class MainApp {
 
@@ -23,18 +21,14 @@ public class MainApp {
 		System.out.println(" |  DigiMesh Server  |");
 		System.out.println(" +-------------------+\n");
 
-		try {
-			deviceConfig = DeviceConfig.getInstance();
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		}
 		new LogRecord();
 
+		deviceConfig = DeviceConfig.getInstance();
 		myDevice = OpenMyDevice.open(deviceConfig);
 
 		System.out.println("\n>> Waiting messages ...");
 
 		// Registra listener para processar mensagens recebidas
-		RouterRadio.getInstance().processMyMessage(new ProcessMessage());
+		RadioRouter.getInstance().addProcessMessageListener(new ProcessMessage());
 	}
 }

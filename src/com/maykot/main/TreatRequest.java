@@ -16,21 +16,21 @@ import com.maykot.radiolibrary.ErrorMessage;
 import com.maykot.radiolibrary.MessageParameter;
 import com.maykot.radiolibrary.ProxyRequest;
 import com.maykot.radiolibrary.ProxyResponse;
-import com.maykot.radiolibrary.RouterRadio;
+import com.maykot.radiolibrary.RadioRouter;
 
 public class TreatRequest {
 
-	private RouterRadio routerRadio;
+	private RadioRouter routerRadio;
 
 	public TreatRequest() {
-		this(RouterRadio.getInstance());
+		this(RadioRouter.getInstance());
 	}
 
-	public TreatRequest(RouterRadio routerRadio) {
+	public TreatRequest(RadioRouter routerRadio) {
 		this.routerRadio = routerRadio;
 	}
 
-	public TreatRequest(RemoteXBeeDevice sourceDeviceAddress, byte[] message) {
+	public void mobileRequest(RemoteXBeeDevice sourceDeviceAddress, byte[] message) {
 		ProxyRequest proxyRequest = (ProxyRequest) SerializationUtils.deserialize(message);
 
 		System.out.println(proxyRequest.getIdMessage());
@@ -41,7 +41,29 @@ public class TreatRequest {
 		byte[] responseToSourceDevice = SerializationUtils.serialize(response);
 
 		try {
-			routerRadio.sendMessage(MainApp.myDevice, sourceDeviceAddress, MessageParameter.CONFIRM_HTTP_POST,
+			routerRadio.sendMessage(MainApp.myDevice, sourceDeviceAddress, MessageParameter.CONFIRM_MOBILE_POST,
+					responseToSourceDevice);
+		} catch (TimeoutException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (XBeeException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public void localRequest(RemoteXBeeDevice sourceDeviceAddress, byte[] message) {
+		ProxyRequest proxyRequest = (ProxyRequest) SerializationUtils.deserialize(message);
+
+		System.out.println(proxyRequest.getIdMessage());
+		System.out.println(proxyRequest.getVerb());
+
+		ProxyResponse response = processRequest(proxyRequest, sourceDeviceAddress);
+
+		byte[] responseToSourceDevice = SerializationUtils.serialize(response);
+
+		try {
+			routerRadio.sendMessage(MainApp.myDevice, sourceDeviceAddress, MessageParameter.CONFIRM_LOCAL_POST,
 					responseToSourceDevice);
 		} catch (TimeoutException e) {
 			// TODO Auto-generated catch block
@@ -62,7 +84,8 @@ public class TreatRequest {
 
 		switch (contentType) {
 		case "application/json":
-
+			response = new ProxyResponse(ErrorMessage.OK.value(), requestHeader.get("content-type"),
+					ErrorMessage.OK.description().getBytes());
 			break;
 
 		case "image/jpg":
@@ -81,7 +104,6 @@ public class TreatRequest {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-
 			break;
 
 		default:
