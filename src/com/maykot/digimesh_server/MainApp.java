@@ -1,11 +1,11 @@
-package com.maykot.main;
+package com.maykot.digimesh_server;
 
 import com.digi.xbee.api.DigiMeshDevice;
 import com.digi.xbee.api.RemoteXBeeDevice;
 import com.maykot.radiolibrary.RadioRouter;
-import com.maykot.utils.DeviceConfig;
-import com.maykot.utils.LogRecord;
-import com.maykot.utils.OpenMyDevice;
+import com.maykot.radiolibrary.utils.DeviceConfig;
+import com.maykot.radiolibrary.utils.LogRecord;
+import com.maykot.radiolibrary.utils.OpenMyDevice;
 
 public class MainApp {
 

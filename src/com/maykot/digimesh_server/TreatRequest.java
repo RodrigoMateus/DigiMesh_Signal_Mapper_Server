@@ -1,4 +1,4 @@
-package com.maykot.main;
+package com.maykot.digimesh_server;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -12,22 +12,22 @@ import org.apache.commons.lang3.SerializationUtils;
 import com.digi.xbee.api.RemoteXBeeDevice;
 import com.digi.xbee.api.exceptions.TimeoutException;
 import com.digi.xbee.api.exceptions.XBeeException;
-import com.maykot.radiolibrary.ErrorMessage;
-import com.maykot.radiolibrary.MessageParameter;
-import com.maykot.radiolibrary.ProxyRequest;
-import com.maykot.radiolibrary.ProxyResponse;
 import com.maykot.radiolibrary.RadioRouter;
+import com.maykot.radiolibrary.model.ErrorMessage;
+import com.maykot.radiolibrary.model.MessageParameter;
+import com.maykot.radiolibrary.model.ProxyRequest;
+import com.maykot.radiolibrary.model.ProxyResponse;
 
 public class TreatRequest {
 
-	private RadioRouter routerRadio;
+	private RadioRouter radioRouter;
 
 	public TreatRequest() {
 		this(RadioRouter.getInstance());
 	}
 
-	public TreatRequest(RadioRouter routerRadio) {
-		this.routerRadio = routerRadio;
+	public TreatRequest(RadioRouter radioRouter) {
+		this.radioRouter = radioRouter;
 	}
 
 	public void mobileRequest(RemoteXBeeDevice sourceDeviceAddress, byte[] message) {
@@ -41,7 +41,7 @@ public class TreatRequest {
 		byte[] responseToSourceDevice = SerializationUtils.serialize(response);
 
 		try {
-			routerRadio.sendMessage(MainApp.myDevice, sourceDeviceAddress, MessageParameter.CONFIRM_MOBILE_POST,
+			radioRouter.sendMessage(MainApp.myDevice, sourceDeviceAddress, MessageParameter.CONFIRM_MOBILE_POST,
 					responseToSourceDevice);
 		} catch (TimeoutException e) {
 			// TODO Auto-generated catch block
@@ -63,7 +63,7 @@ public class TreatRequest {
 		byte[] responseToSourceDevice = SerializationUtils.serialize(response);
 
 		try {
-			routerRadio.sendMessage(MainApp.myDevice, sourceDeviceAddress, MessageParameter.CONFIRM_LOCAL_POST,
+			radioRouter.sendMessage(MainApp.myDevice, sourceDeviceAddress, MessageParameter.CONFIRM_LOCAL_POST,
 					responseToSourceDevice);
 		} catch (TimeoutException e) {
 			// TODO Auto-generated catch block
@@ -84,8 +84,7 @@ public class TreatRequest {
 
 		switch (contentType) {
 		case "application/json":
-			response = new ProxyResponse(ErrorMessage.OK.value(), requestHeader.get("content-type"),
-					ErrorMessage.OK.description().getBytes());
+			response = new ProxyResponse(ErrorMessage.OK.value(), ErrorMessage.OK.description().getBytes());
 			break;
 
 		case "image/jpg":
@@ -95,8 +94,7 @@ public class TreatRequest {
 				FileOutputStream fileChannel = new FileOutputStream(fileName);
 				fileChannel.write(tempByteArray);
 				fileChannel.close();
-				response = new ProxyResponse(ErrorMessage.OK.value(), requestHeader.get("content-type"),
-						ErrorMessage.OK.description().getBytes());
+				response = new ProxyResponse(ErrorMessage.OK.value(), ErrorMessage.OK.description().getBytes());
 			} catch (FileNotFoundException e) {
 				System.out.println("ERRO FileChannel");
 				e.printStackTrace();
@@ -111,11 +109,11 @@ public class TreatRequest {
 		}
 
 		if (response == null) {
-			response = new ProxyResponse(ErrorMessage.TRANSMIT_EXCEPTION.value(), requestHeader.get("content-type"),
-					ErrorMessage.TRANSMIT_EXCEPTION.description().getBytes());
+			response = new ProxyResponse(ErrorMessage.TRANSMIT_EXCEPTION.value(), ErrorMessage.TRANSMIT_EXCEPTION.description().getBytes());
 		}
+		response.setMqttClientId(proxyRequest.getMqttClientId());
 		response.setIdMessage(proxyRequest.getIdMessage());
 		return response;
-
 	}
+
 }

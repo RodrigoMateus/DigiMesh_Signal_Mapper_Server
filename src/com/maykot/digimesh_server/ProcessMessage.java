@@ -1,4 +1,4 @@
-package com.maykot.main;
+package com.maykot.digimesh_server;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -9,20 +9,20 @@ import java.util.Date;
 import com.digi.xbee.api.RemoteXBeeDevice;
 import com.digi.xbee.api.exceptions.TimeoutException;
 import com.digi.xbee.api.exceptions.XBeeException;
-import com.maykot.radiolibrary.IProcessMessage;
-import com.maykot.radiolibrary.MessageParameter;
 import com.maykot.radiolibrary.RadioRouter;
+import com.maykot.radiolibrary.interfaces.IProcessMessage;
+import com.maykot.radiolibrary.model.MessageParameter;
 
 public class ProcessMessage implements IProcessMessage {
 
-	private RadioRouter routerRadio;
+	private RadioRouter radioRouter;
 
 	public ProcessMessage() {
 		this(RadioRouter.getInstance());
 	}
 
-	public ProcessMessage(RadioRouter routerRadio) {
-		this.routerRadio = routerRadio;
+	public ProcessMessage(RadioRouter radioRouter) {
+		this.radioRouter = radioRouter;
 	}
 
 	@Override
@@ -32,7 +32,7 @@ public class ProcessMessage implements IProcessMessage {
 			FileOutputStream fileChannel = new FileOutputStream(fileName);
 			fileChannel.write(message);
 			fileChannel.close();
-			routerRadio.sendMessage(MainApp.myDevice, sourceDeviceAddress, MessageParameter.CONFIRM_TXT_FILE,
+			radioRouter.sendMessage(MainApp.myDevice, sourceDeviceAddress, MessageParameter.CONFIRM_TXT_FILE,
 					new String("Texto enviado com SUCESSO!").getBytes());
 		} catch (FileNotFoundException e) {
 			System.out.println("FileNotFoundException: ERRO ao criar arquivo texto");
