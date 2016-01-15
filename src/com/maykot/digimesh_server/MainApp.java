@@ -26,6 +26,10 @@ public class MainApp {
 		deviceConfig = DeviceConfig.getInstance();
 		myDevice = OpenMyDevice.open(deviceConfig);
 
+		// verifica se o rádio está conectado e
+		// tenta reconectar se rádio não foi encontrado.
+		new Thread(new RadioMonitor()).start();
+
 		System.out.println("\n>> Waiting messages ...");
 
 		// Registra listener para processar mensagens recebidas

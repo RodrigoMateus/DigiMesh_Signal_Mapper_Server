@@ -13,6 +13,7 @@ import com.digi.xbee.api.RemoteXBeeDevice;
 import com.digi.xbee.api.exceptions.TimeoutException;
 import com.digi.xbee.api.exceptions.XBeeException;
 import com.maykot.radiolibrary.RadioRouter;
+import com.maykot.radiolibrary.http.ProxyHttp;
 import com.maykot.radiolibrary.model.ErrorMessage;
 import com.maykot.radiolibrary.model.MessageParameter;
 import com.maykot.radiolibrary.model.ProxyRequest;
@@ -77,39 +78,56 @@ public class TreatRequest {
 	private ProxyResponse processRequest(ProxyRequest proxyRequest, RemoteXBeeDevice sourceDeviceAddress) {
 		ProxyResponse response = null;
 
+		try {
+			if (proxyRequest.getVerb().contains("get")) {
+				response = ProxyHttp.getFile(proxyRequest);
+			} else if (proxyRequest.getVerb().contains("post")) {
+				response = ProxyHttp.postFile(proxyRequest);
+			} else {
+				response = new ProxyResponse(ErrorMessage.NOT_VERB.value(),
+						ErrorMessage.NOT_VERB.description().getBytes());
+			}
+		} catch (Exception e) {
+			response = new ProxyResponse(ErrorMessage.INVALID_PROXY_REQUEST.value(),
+					ErrorMessage.INVALID_PROXY_REQUEST.description().getBytes());
+		}
+
 		HashMap<String, String> requestHeader = new HashMap<String, String>();
 		requestHeader = proxyRequest.getHeader();
+		String fileName = null;
+		byte[] tempByteArray = proxyRequest.getBody();
 
 		String contentType = requestHeader.get("content-type");
-
 		switch (contentType) {
 		case "application/json":
-			response = new ProxyResponse(ErrorMessage.OK.value(), ErrorMessage.OK.description().getBytes());
+			fileName = (new String(new SimpleDateFormat("yyyy-MM-dd_HHmmss_").format(new Date()))) + "coordinates.json";
+			// response = new ProxyResponse(ErrorMessage.OK.value(),
+			// ErrorMessage.OK.description().getBytes());
 			break;
-
 		case "image/jpg":
-			byte[] tempByteArray = proxyRequest.getBody();
-			String fileName = (new String(new SimpleDateFormat("yyyy-MM-dd_HHmmss_").format(new Date()))) + "image.jpg";
-			try {
-				FileOutputStream fileChannel = new FileOutputStream(fileName);
-				fileChannel.write(tempByteArray);
-				fileChannel.close();
-				response = new ProxyResponse(ErrorMessage.OK.value(), ErrorMessage.OK.description().getBytes());
-			} catch (FileNotFoundException e) {
-				System.out.println("ERRO FileChannel");
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			fileName = (new String(new SimpleDateFormat("yyyy-MM-dd_HHmmss_").format(new Date()))) + "imagem.jpg";
 			break;
 
 		default:
 			break;
 		}
+		try {
+			FileOutputStream fileChannel = new FileOutputStream(fileName);
+			fileChannel.write(tempByteArray);
+			fileChannel.close();
+			// response = new ProxyResponse(ErrorMessage.OK.value(),
+			// ErrorMessage.OK.description().getBytes());
+		} catch (FileNotFoundException e) {
+			System.out.println("ERRO FileChannel");
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 		if (response == null) {
-			response = new ProxyResponse(ErrorMessage.TRANSMIT_EXCEPTION.value(), ErrorMessage.TRANSMIT_EXCEPTION.description().getBytes());
+			response = new ProxyResponse(ErrorMessage.TRANSMIT_EXCEPTION.value(),
+					ErrorMessage.TRANSMIT_EXCEPTION.description().getBytes());
 		}
 		response.setMqttClientId(proxyRequest.getMqttClientId());
 		response.setIdMessage(proxyRequest.getIdMessage());
