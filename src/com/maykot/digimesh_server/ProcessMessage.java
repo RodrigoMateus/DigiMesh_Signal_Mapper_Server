@@ -26,6 +26,27 @@ public class ProcessMessage implements IProcessMessage {
 	}
 
 	@Override
+	public void clientConnectionReceived(RemoteXBeeDevice sourceDeviceAddress, byte[] message) {
+		System.out.println(message);
+		try {
+			radioRouter.sendMessage(MainApp.myDevice, sourceDeviceAddress, MessageParameter.CONFIRM_CLIENT_CONNECTION,
+					new String("Successfully connected client " + sourceDeviceAddress.getNodeID()).getBytes());
+		} catch (TimeoutException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (XBeeException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public void clientConnectionConfirm(byte[] message) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
 	public void textFileReceived(RemoteXBeeDevice sourceDeviceAddress, byte[] message) {
 		String fileName = (new String(new SimpleDateFormat("yyyy-MM-dd_HHmmss_").format(new Date()))) + ".txt";
 		try {
