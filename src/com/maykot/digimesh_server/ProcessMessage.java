@@ -27,10 +27,10 @@ public class ProcessMessage implements IProcessMessage {
 
 	@Override
 	public void clientConnectionReceived(RemoteXBeeDevice sourceDeviceAddress, byte[] message) {
-		System.out.println(message);
+		System.out.println(new String(message));
 		try {
 			radioRouter.sendMessage(MainApp.myDevice, sourceDeviceAddress, MessageParameter.CONFIRM_CLIENT_CONNECTION,
-					new String("Successfully connected client " + sourceDeviceAddress.getNodeID()).getBytes());
+					new String("Successfully connected to server!").getBytes());
 		} catch (TimeoutException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
