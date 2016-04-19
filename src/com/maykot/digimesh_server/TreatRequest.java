@@ -6,9 +6,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
-
 import org.apache.commons.lang3.SerializationUtils;
-
 import com.digi.xbee.api.RemoteXBeeDevice;
 import com.digi.xbee.api.exceptions.TimeoutException;
 import com.digi.xbee.api.exceptions.XBeeException;
@@ -18,6 +16,7 @@ import com.maykot.radiolibrary.model.ErrorMessage;
 import com.maykot.radiolibrary.model.MessageParameter;
 import com.maykot.radiolibrary.model.ProxyRequest;
 import com.maykot.radiolibrary.model.ProxyResponse;
+import com.maykot.radiolibrary.utils.LogRecord;
 
 public class TreatRequest {
 
@@ -33,6 +32,11 @@ public class TreatRequest {
 
 	public void mobileRequest(RemoteXBeeDevice sourceDeviceAddress, byte[] message) {
 		ProxyRequest proxyRequest = (ProxyRequest) SerializationUtils.deserialize(message);
+
+		LogRecord.insertLog("MobileRequest_ServerLog",
+				new String(proxyRequest.getMqttClientId() + ";" + proxyRequest.getIdMessage() + ";"
+						+ new String(new SimpleDateFormat("yyyy-MM-dd;HH:mm:ss:SSS").format(new Date())) + ";"
+						+ new String(proxyRequest.getBody())));
 
 		System.out.println(proxyRequest.getIdMessage());
 		System.out.println(proxyRequest.getVerb());
@@ -82,7 +86,7 @@ public class TreatRequest {
 			if (proxyRequest.getVerb().contains("get")) {
 				response = ProxyHttp.getFile(proxyRequest);
 			} else if (proxyRequest.getVerb().contains("post")) {
-				response = ProxyHttp.postFile(proxyRequest);
+				response = postFile(proxyRequest);
 			} else {
 				response = new ProxyResponse(ErrorMessage.NOT_VERB.value(),
 						ErrorMessage.NOT_VERB.description().getBytes());
@@ -132,6 +136,26 @@ public class TreatRequest {
 		response.setMqttClientId(proxyRequest.getMqttClientId());
 		response.setIdMessage(proxyRequest.getIdMessage());
 		return response;
+	}
+
+	public static ProxyResponse postFile(ProxyRequest proxyRequest) {
+
+		ProxyResponse proxyResponse = null;
+		String response = null;
+
+		response = "Log recebido!!!";
+
+		proxyResponse = new ProxyResponse(200, response.getBytes());
+		proxyResponse.setIdMessage(proxyRequest.getIdMessage());
+		// getHeader(proxyResponse, httpResponse);
+
+		System.out.println(proxyResponse.toString());
+
+		LogRecord.insertLog("MobileRequest_ServerLog",
+				new String(proxyRequest.getMqttClientId() + ";" + proxyRequest.getIdMessage() + ";"
+						+ new String(new SimpleDateFormat("yyyy-MM-dd;HH:mm:ss:SSS").format(new Date())) + ";"
+						+ new String(proxyRequest.getBody())));
+		return proxyResponse;
 	}
 
 }
