@@ -10,10 +10,13 @@ import org.apache.commons.lang3.SerializationUtils;
 import com.digi.xbee.api.RemoteXBeeDevice;
 import com.digi.xbee.api.exceptions.TimeoutException;
 import com.digi.xbee.api.exceptions.XBeeException;
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import com.maykot.radiolibrary.RadioRouter;
 import com.maykot.radiolibrary.http.ProxyHttp;
 import com.maykot.radiolibrary.model.ErrorMessage;
 import com.maykot.radiolibrary.model.MessageParameter;
+import com.maykot.radiolibrary.model.Point;
 import com.maykot.radiolibrary.model.ProxyRequest;
 import com.maykot.radiolibrary.model.ProxyResponse;
 import com.maykot.radiolibrary.utils.LogRecord;
@@ -32,7 +35,7 @@ public class TreatRequest {
 
 	public void mobileRequest(RemoteXBeeDevice sourceDeviceAddress, byte[] message) {
 		ProxyRequest proxyRequest = (ProxyRequest) SerializationUtils.deserialize(message);
-
+		
 		LogRecord.insertLog("MobileRequest_ServerLog",
 				new String(proxyRequest.getMqttClientId() + ";" + proxyRequest.getIdMessage() + ";"
 						+ new String(new SimpleDateFormat("yyyy-MM-dd;HH:mm:ss:SSS").format(new Date())) + ";"
@@ -107,6 +110,9 @@ public class TreatRequest {
 			fileName = (new String(new SimpleDateFormat("yyyy-MM-dd_HHmmss_").format(new Date()))) + "coordinates.json";
 			// response = new ProxyResponse(ErrorMessage.OK.value(),
 			// ErrorMessage.OK.description().getBytes());
+
+			saveCoordinatesToLog(tempByteArray);
+
 			break;
 		case "image/jpg":
 			fileName = (new String(new SimpleDateFormat("yyyy-MM-dd_HHmmss_").format(new Date()))) + "imagem.jpg";
@@ -138,6 +144,16 @@ public class TreatRequest {
 		return response;
 	}
 
+	private void saveCoordinatesToLog(byte[] tempByteArray) {
+		Gson gson = new Gson();
+		try {
+			Point point = gson.fromJson(new String(tempByteArray), Point.class);
+			LogRecord.insertCoordinates("CoordinatesFromRouter", point.latitude + "," + point.longitude);
+		} catch (JsonSyntaxException e1) {
+			System.out.println("Mensagem não contém um JSON válido.");
+		}
+	}
+
 	public static ProxyResponse postFile(ProxyRequest proxyRequest) {
 
 		ProxyResponse proxyResponse = null;
@@ -151,10 +167,6 @@ public class TreatRequest {
 
 		System.out.println(proxyResponse.toString());
 
-		LogRecord.insertLog("MobileRequest_ServerLog",
-				new String(proxyRequest.getMqttClientId() + ";" + proxyRequest.getIdMessage() + ";"
-						+ new String(new SimpleDateFormat("yyyy-MM-dd;HH:mm:ss:SSS").format(new Date())) + ";"
-						+ new String(proxyRequest.getBody())));
 		return proxyResponse;
 	}
 
