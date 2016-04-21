@@ -16,10 +16,10 @@ public class MainApp {
 	static DeviceConfig deviceConfig;
 
 	/* Se o rádio for um XTend */
-	// public static DigiMeshDevice myDevice = null;
+	public static DigiMeshDevice myDevice = null;
 
 	/* Se o rádio for um XBee */
-	public static ZigBeeDevice myDevice = null;
+//	public static ZigBeeDevice myDevice = null;
 
 	public static RemoteXBeeDevice remoteDevice;
 
