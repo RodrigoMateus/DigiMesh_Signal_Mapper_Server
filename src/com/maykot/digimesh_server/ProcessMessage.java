@@ -48,6 +48,10 @@ public class ProcessMessage implements IProcessMessage {
 
 	@Override
 	public void textFileReceived(RemoteXBeeDevice sourceDeviceAddress, byte[] message) {
+		treatTextFile(sourceDeviceAddress, message);
+	}
+
+	private void treatTextFile(RemoteXBeeDevice sourceDeviceAddress, byte[] message) {
 		String fileName = (new String(new SimpleDateFormat("yyyy-MM-dd_HHmmss_").format(new Date()))) + ".txt";
 		try {
 			FileOutputStream fileChannel = new FileOutputStream(fileName);
@@ -92,6 +96,30 @@ public class ProcessMessage implements IProcessMessage {
 
 	@Override
 	public void mobilePostConfirm(byte[] message) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void packetTransferReceived(RemoteXBeeDevice sourceDeviceAddress, String md5, byte[] message) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void packetTransferConfirm(byte[] message) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void telemetryTransferReceived(RemoteXBeeDevice sourceDeviceAddress, String md5, byte[] message) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void textFileReceived(RemoteXBeeDevice sourceDeviceAddress, String md5, byte[] message) {
 		// TODO Auto-generated method stub
 
 	}

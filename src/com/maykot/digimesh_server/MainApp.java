@@ -1,6 +1,6 @@
 package com.maykot.digimesh_server;
 
-import com.digi.xbee.api.DigiMeshDevice;
+import com.digi.xbee.api.ZigBeeDevice;
 import com.digi.xbee.api.RemoteXBeeDevice;
 import com.digi.xbee.api.XBeeDevice;
 import com.digi.xbee.api.ZigBeeDevice;
@@ -16,7 +16,7 @@ public class MainApp {
 	static DeviceConfig deviceConfig;
 
 	/* Se o rádio for um XTend */
-	public static DigiMeshDevice myDevice = null;
+	public static ZigBeeDevice myDevice = null;
 
 	/* Se o rádio for um XBee */
 //	public static ZigBeeDevice myDevice = null;
@@ -31,7 +31,7 @@ public class MainApp {
 		new LogRecord();
 
 		deviceConfig = DeviceConfig.getInstance();
-		myDevice = OpenMyDevice.open(deviceConfig, myDevice);
+		myDevice = OpenMyDevice.open(deviceConfig);
 
 		// verifica se o rádio está conectado e
 		// tenta reconectar se rádio não foi encontrado.
